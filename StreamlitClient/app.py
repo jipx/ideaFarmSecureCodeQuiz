@@ -4,9 +4,12 @@ import time
 import toml
 import json
 
-# Load API base from config
-config = toml.load(".streamlit/config.toml")
-API_BASE = config.get("api", {}).get("base_url", "http://localhost")
+
+
+# ✅ Load API base from Streamlit secret
+API_BASE = st.secrets["api"]["base_url"]
+
+
 
 st.set_page_config(page_title="OWASP Quiz Generator", layout="centered")
 st.title("☁️ OWASP Quiz Generator")
