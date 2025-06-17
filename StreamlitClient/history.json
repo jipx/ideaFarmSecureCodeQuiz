@@ -1,0 +1,67 @@
+{
+  "answers": [
+    {
+      "sessionId": "ccd3af53-aad7-4ff5-b1cd-165f3e189210",
+      "userId": "student001",
+      "category": "Broken Access Control",
+      "difficulty": "low",
+      "score": 5,
+      "total": 5,
+      "timestamp": "2025-06-17 14:55:53"
+    },
+    {
+      "sessionId": "49a071da-c0c5-44a1-899d-4f509c8910e2",
+      "userId": "student001",
+      "category": "SQL Injection",
+      "difficulty": "low",
+      "score": 5,
+      "total": 5,
+      "timestamp": "2025-06-17 15:03:59"
+    },
+    {
+      "sessionId": "a4c05673-8e83-49c1-a609-6cbedcd75cf5",
+      "userId": "student001",
+      "category": "Broken Authentication",
+      "difficulty": "low",
+      "score": 5,
+      "total": 5,
+      "timestamp": "2025-06-17 15:07:51"
+    },
+    {
+      "sessionId": "03e23181-4eed-4f6a-b7c6-d12580e8d38d",
+      "userId": "student001",
+      "category": "Broken Access Control",
+      "difficulty": "low",
+      "score": 0,
+      "total": 5,
+      "timestamp": "2025-06-17 15:08:47"
+    },
+    {
+      "sessionId": "ab6fa299-2d06-4da6-93ae-c32d1cc3f8ba",
+      "userId": "student001",
+      "category": "Broken Access Control",
+      "difficulty": "medium",
+      "score": 4,
+      "total": 5,
+      "timestamp": "2025-06-17 15:10:53"
+    },
+    {
+      "sessionId": "ab6fa299-2d06-4da6-93ae-c32d1cc3f8ba",
+      "userId": "student001",
+      "category": "Broken Access Control",
+      "difficulty": "medium",
+      "score": 4,
+      "total": 5,
+      "timestamp": "2025-06-17 15:11:35"
+    },
+    {
+      "sessionId": "0efc2e11-76d2-4219-ac6b-8010dfc9f99e",
+      "userId": "student001",
+      "category": "Broken Access Control",
+      "difficulty": "high",
+      "score": 5,
+      "total": 5,
+      "timestamp": "2025-06-17 15:20:55"
+    }
+  ]
+}

@@ -1,0 +1,1240 @@
+{
+ "Resources": {
+  "SessionTableA016F679": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "sessionId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "sessionId",
+      "KeyType": "HASH"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/SessionTable/Resource"
+   }
+  },
+  "QuizGenDLQA07CB3AA": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizGenDLQ/Resource"
+   }
+  },
+  "QuizGenQueueF11C9B1E": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "QuizGenDLQA07CB3AA",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "VisibilityTimeout": 60
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizGenQueue/Resource"
+   }
+  },
+  "EvaluationQueueF9A2AAD1": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/EvaluationQueue/Resource"
+   }
+  },
+  "RecordQueueCE027E6F": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/RecordQueue/Resource"
+   }
+  },
+  "SubmitFunctionServiceRole9EBDFBC1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/SubmitFunction/ServiceRole/Resource"
+   }
+  },
+  "SubmitFunctionServiceRoleDefaultPolicyE9533743": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SessionTableA016F679",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "sqs:SendMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "QuizGenQueueF11C9B1E",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "sqs:SendMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EvaluationQueueF9A2AAD1",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "sqs:SendMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "RecordQueueCE027E6F",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SubmitFunctionServiceRoleDefaultPolicyE9533743",
+    "Roles": [
+     {
+      "Ref": "SubmitFunctionServiceRole9EBDFBC1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/SubmitFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "SubmitFunction882FE8FE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "SESSION_TABLE": {
+       "Ref": "SessionTableA016F679"
+      },
+      "QUIZGEN_QUEUE_URL": {
+       "Ref": "QuizGenQueueF11C9B1E"
+      },
+      "EVALUATION_QUEUE_URL": {
+       "Ref": "EvaluationQueueF9A2AAD1"
+      },
+      "RECORD_QUEUE_URL": {
+       "Ref": "RecordQueueCE027E6F"
+      }
+     }
+    },
+    "Handler": "submit.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SubmitFunctionServiceRole9EBDFBC1",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11"
+   },
+   "DependsOn": [
+    "SubmitFunctionServiceRoleDefaultPolicyE9533743",
+    "SubmitFunctionServiceRole9EBDFBC1"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/SubmitFunction/Resource",
+    "aws:asset:path": "asset.a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetResultFunctionServiceRole5A5AF93B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/GetResultFunction/ServiceRole/Resource"
+   }
+  },
+  "GetResultFunctionServiceRoleDefaultPolicy8801DDAF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SessionTableA016F679",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetResultFunctionServiceRoleDefaultPolicy8801DDAF",
+    "Roles": [
+     {
+      "Ref": "GetResultFunctionServiceRole5A5AF93B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/GetResultFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GetResultFunctionBBBCDD26": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "SESSION_TABLE": {
+       "Ref": "SessionTableA016F679"
+      }
+     }
+    },
+    "Handler": "get_result.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GetResultFunctionServiceRole5A5AF93B",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11"
+   },
+   "DependsOn": [
+    "GetResultFunctionServiceRoleDefaultPolicy8801DDAF",
+    "GetResultFunctionServiceRole5A5AF93B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/GetResultFunction/Resource",
+    "aws:asset:path": "asset.a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "QuizGenFunctionServiceRole91BEC176": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizGenFunction/ServiceRole/Resource"
+   }
+  },
+  "QuizGenFunctionServiceRoleDefaultPolicy26A0FCED": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SessionTableA016F679",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:ChangeMessageVisibility",
+        "sqs:GetQueueUrl",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "QuizGenQueueF11C9B1E",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "bedrock:InvokeAgent",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "QuizGenFunctionServiceRoleDefaultPolicy26A0FCED",
+    "Roles": [
+     {
+      "Ref": "QuizGenFunctionServiceRole91BEC176"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizGenFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "QuizGenFunctionFDF77FB0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "SESSION_TABLE": {
+       "Ref": "SessionTableA016F679"
+      },
+      "AGENT_ID": "your-agent-id",
+      "AGENT_ALIAS_ID": "your-alias-id",
+      "BEDROCK_REGION": "ap-northeast-1"
+     }
+    },
+    "Handler": "quizgen.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "QuizGenFunctionServiceRole91BEC176",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "QuizGenFunctionServiceRoleDefaultPolicy26A0FCED",
+    "QuizGenFunctionServiceRole91BEC176"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizGenFunction/Resource",
+    "aws:asset:path": "asset.a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "QuizGenFunctionSqsEventSourceGamifiedBackendStackQuizGenQueue168E4938799E6B8E": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "BatchSize": 1,
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "QuizGenQueueF11C9B1E",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "QuizGenFunctionFDF77FB0"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizGenFunction/SqsEventSource:GamifiedBackendStackQuizGenQueue168E4938/Resource"
+   }
+  },
+  "QuizApiD9032479": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "QuizApi"
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Resource"
+   }
+  },
+  "QuizApiCloudWatchRoleA32CDDC6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/CloudWatchRole/Resource"
+   }
+  },
+  "QuizApiAccount056EB050": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "QuizApiCloudWatchRoleA32CDDC6",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "QuizApiD9032479"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Account"
+   }
+  },
+  "QuizApiDeploymentC8F4119B382761a394bfa86f4065aa6309329d0a": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "QuizApiD9032479"
+    }
+   },
+   "DependsOn": [
+    "QuizApigeneratequizPOSTCD6A164C",
+    "QuizApigeneratequiz5AC1D1C6",
+    "QuizApiquizresultGETB66B1639",
+    "QuizApiquizresultEC01F4E9"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Deployment/Resource"
+   }
+  },
+  "QuizApiDeploymentStageprodD093E352": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "QuizApiDeploymentC8F4119B382761a394bfa86f4065aa6309329d0a"
+    },
+    "RestApiId": {
+     "Ref": "QuizApiD9032479"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "QuizApiAccount056EB050"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "QuizApigeneratequiz5AC1D1C6": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "QuizApiD9032479",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "generate-quiz",
+    "RestApiId": {
+     "Ref": "QuizApiD9032479"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/generate-quiz/Resource"
+   }
+  },
+  "QuizApigeneratequizPOSTApiPermissionGamifiedBackendStackQuizApiF23C43FBPOSTgeneratequizA32C8407": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SubmitFunction882FE8FE",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "QuizApiD9032479"
+       },
+       "/",
+       {
+        "Ref": "QuizApiDeploymentStageprodD093E352"
+       },
+       "/POST/generate-quiz"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/generate-quiz/POST/ApiPermission.GamifiedBackendStackQuizApiF23C43FB.POST..generate-quiz"
+   }
+  },
+  "QuizApigeneratequizPOSTApiPermissionTestGamifiedBackendStackQuizApiF23C43FBPOSTgeneratequiz238CF208": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SubmitFunction882FE8FE",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "QuizApiD9032479"
+       },
+       "/test-invoke-stage/POST/generate-quiz"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/generate-quiz/POST/ApiPermission.Test.GamifiedBackendStackQuizApiF23C43FB.POST..generate-quiz"
+   }
+  },
+  "QuizApigeneratequizPOSTCD6A164C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "SubmitFunction882FE8FE",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "QuizApigeneratequiz5AC1D1C6"
+    },
+    "RestApiId": {
+     "Ref": "QuizApiD9032479"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/generate-quiz/POST/Resource"
+   }
+  },
+  "QuizApiquizresultEC01F4E9": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "QuizApiD9032479",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "quiz-result",
+    "RestApiId": {
+     "Ref": "QuizApiD9032479"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/quiz-result/Resource"
+   }
+  },
+  "QuizApiquizresultGETApiPermissionGamifiedBackendStackQuizApiF23C43FBGETquizresult0EFC8385": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetResultFunctionBBBCDD26",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "QuizApiD9032479"
+       },
+       "/",
+       {
+        "Ref": "QuizApiDeploymentStageprodD093E352"
+       },
+       "/GET/quiz-result"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/quiz-result/GET/ApiPermission.GamifiedBackendStackQuizApiF23C43FB.GET..quiz-result"
+   }
+  },
+  "QuizApiquizresultGETApiPermissionTestGamifiedBackendStackQuizApiF23C43FBGETquizresultB6A9BEAE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetResultFunctionBBBCDD26",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "QuizApiD9032479"
+       },
+       "/test-invoke-stage/GET/quiz-result"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/quiz-result/GET/ApiPermission.Test.GamifiedBackendStackQuizApiF23C43FB.GET..quiz-result"
+   }
+  },
+  "QuizApiquizresultGETB66B1639": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "GetResultFunctionBBBCDD26",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "QuizApiquizresultEC01F4E9"
+    },
+    "RestApiId": {
+     "Ref": "QuizApiD9032479"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/QuizApi/Default/quiz-result/GET/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22PzXLCMAyEn4W7UYE8QejPjSlNemcURwWT2E6RXCbj8bt34tDSQ0/7aaVZrzewWa1htcArL3XbLXvTQKwFdafwyofYjg6tbxuI79j0pB4/XIak+JMhvgUK2cyQVI+2aRHiS3BajHfT6pefv8hJ7cNF0w6HwbjjtP7f3dPFGmbjXVIGLcTKz69n3fve6DHfZUqKiwMykzCUkyguYBt0R7JFJoWDOaLQFUeIFbGUg8lZdyy19sGJeqKh96MlJ5P7Z6oFj7nADBVxrpzjf4Zb5sw7kpNvJ2umlO53ueMUdPvta5AhSFL7UU7ePRSwLqBYnNmY5SU4MZagmvUbNABuTbABAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "GamifiedBackendStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "QuizApiEndpoint2A681FF6": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "QuizApiD9032479"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "QuizApiDeploymentStageprodD093E352"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

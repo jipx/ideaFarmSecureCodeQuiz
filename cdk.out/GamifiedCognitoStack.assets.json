@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "5c21d58ed6394ecce7d3f0dbb5b937a220780aee1c200380040ad648281cfd03": {
+      "displayName": "GamifiedCognitoStack Template",
+      "source": {
+        "path": "GamifiedCognitoStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5c21d58ed6394ecce7d3f0dbb5b937a220780aee1c200380040ad648281cfd03.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

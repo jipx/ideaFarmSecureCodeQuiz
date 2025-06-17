@@ -1,0 +1,34 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d": {
+      "displayName": "SubmitFunction/Code",
+      "source": {
+        "path": "asset.a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a1b718263597b74f0caedee7b5c1fe792e1075da2b22fda20131aa2b2ffe860d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2ac15aee0b7c95fbfa1112774b98cfff7ab30868f04ff64dc45f41d4d91e7e8c": {
+      "displayName": "GamifiedBackendStack Template",
+      "source": {
+        "path": "GamifiedBackendStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2ac15aee0b7c95fbfa1112774b98cfff7ab30868f04ff64dc45f41d4d91e7e8c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

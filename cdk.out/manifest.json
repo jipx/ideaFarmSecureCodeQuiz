@@ -1,0 +1,330 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "GamifiedCognitoStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GamifiedCognitoStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GamifiedCognitoStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "GamifiedCognitoStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c21d58ed6394ecce7d3f0dbb5b937a220780aee1c200380040ad648281cfd03.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GamifiedCognitoStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GamifiedCognitoStack.assets"
+      ],
+      "metadata": {
+        "/GamifiedCognitoStack/GamifiedUserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GamifiedUserPoolCD44CA04"
+          }
+        ],
+        "/GamifiedCognitoStack/GamifiedUserPoolClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GamifiedUserPoolClient75882B0C"
+          }
+        ],
+        "/GamifiedCognitoStack/UserPoolId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolId"
+          }
+        ],
+        "/GamifiedCognitoStack/UserPoolClientId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolClientId"
+          }
+        ],
+        "/GamifiedCognitoStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/GamifiedCognitoStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/GamifiedCognitoStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GamifiedCognitoStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GamifiedCognitoStack"
+    },
+    "GamifiedBackendStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GamifiedBackendStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GamifiedBackendStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "GamifiedBackendStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ac15aee0b7c95fbfa1112774b98cfff7ab30868f04ff64dc45f41d4d91e7e8c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GamifiedBackendStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GamifiedBackendStack.assets"
+      ],
+      "metadata": {
+        "/GamifiedBackendStack/SessionTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SessionTableA016F679"
+          }
+        ],
+        "/GamifiedBackendStack/QuizGenDLQ/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizGenDLQA07CB3AA"
+          }
+        ],
+        "/GamifiedBackendStack/QuizGenQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizGenQueueF11C9B1E"
+          }
+        ],
+        "/GamifiedBackendStack/EvaluationQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EvaluationQueueF9A2AAD1"
+          }
+        ],
+        "/GamifiedBackendStack/RecordQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordQueueCE027E6F"
+          }
+        ],
+        "/GamifiedBackendStack/SubmitFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubmitFunctionServiceRole9EBDFBC1"
+          }
+        ],
+        "/GamifiedBackendStack/SubmitFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubmitFunctionServiceRoleDefaultPolicyE9533743"
+          }
+        ],
+        "/GamifiedBackendStack/SubmitFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubmitFunction882FE8FE"
+          }
+        ],
+        "/GamifiedBackendStack/GetResultFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetResultFunctionServiceRole5A5AF93B"
+          }
+        ],
+        "/GamifiedBackendStack/GetResultFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetResultFunctionServiceRoleDefaultPolicy8801DDAF"
+          }
+        ],
+        "/GamifiedBackendStack/GetResultFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetResultFunctionBBBCDD26"
+          }
+        ],
+        "/GamifiedBackendStack/QuizGenFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizGenFunctionServiceRole91BEC176"
+          }
+        ],
+        "/GamifiedBackendStack/QuizGenFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizGenFunctionServiceRoleDefaultPolicy26A0FCED"
+          }
+        ],
+        "/GamifiedBackendStack/QuizGenFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizGenFunctionFDF77FB0"
+          }
+        ],
+        "/GamifiedBackendStack/QuizGenFunction/SqsEventSource:GamifiedBackendStackQuizGenQueue168E4938/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizGenFunctionSqsEventSourceGamifiedBackendStackQuizGenQueue168E4938799E6B8E"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiD9032479"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiCloudWatchRoleA32CDDC6"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiAccount056EB050"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiDeploymentC8F4119B382761a394bfa86f4065aa6309329d0a"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiDeploymentStageprodD093E352"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiEndpoint2A681FF6"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/generate-quiz/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApigeneratequiz5AC1D1C6"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/generate-quiz/POST/ApiPermission.GamifiedBackendStackQuizApiF23C43FB.POST..generate-quiz": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApigeneratequizPOSTApiPermissionGamifiedBackendStackQuizApiF23C43FBPOSTgeneratequizA32C8407"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/generate-quiz/POST/ApiPermission.Test.GamifiedBackendStackQuizApiF23C43FB.POST..generate-quiz": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApigeneratequizPOSTApiPermissionTestGamifiedBackendStackQuizApiF23C43FBPOSTgeneratequiz238CF208"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/generate-quiz/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApigeneratequizPOSTCD6A164C"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/quiz-result/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiquizresultEC01F4E9"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/quiz-result/GET/ApiPermission.GamifiedBackendStackQuizApiF23C43FB.GET..quiz-result": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiquizresultGETApiPermissionGamifiedBackendStackQuizApiF23C43FBGETquizresult0EFC8385"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/quiz-result/GET/ApiPermission.Test.GamifiedBackendStackQuizApiF23C43FB.GET..quiz-result": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiquizresultGETApiPermissionTestGamifiedBackendStackQuizApiF23C43FBGETquizresultB6A9BEAE"
+          }
+        ],
+        "/GamifiedBackendStack/QuizApi/Default/quiz-result/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuizApiquizresultGETB66B1639"
+          }
+        ],
+        "/GamifiedBackendStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/GamifiedBackendStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/GamifiedBackendStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GamifiedBackendStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GamifiedBackendStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1018.1"
+}
