@@ -159,4 +159,6 @@ def lambda_handler(event, context):
 6. **quizgen Lambda** updates DynamoDB with `status: completed` and the quiz content.
 7. **Student** retrieves the quiz via `GET /quiz-result?sessionId=...`
 
+![alt text](image.png)
+
 ✅ Retries and DLQ ensure failed quiz generations are logged and retryable.
