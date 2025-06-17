@@ -71,6 +71,15 @@
       "score": 5,
       "total": 5,
       "timestamp": "2025-06-17 15:40:27"
+    },
+    {
+      "sessionId": "dceb706f-d2a1-43a5-b731-23175d0cd442",
+      "userId": "student001",
+      "category": "Broken Access Control",
+      "difficulty": "low",
+      "score": 5,
+      "total": 5,
+      "timestamp": "2025-06-17 18:09:05"
     }
   ]
 }

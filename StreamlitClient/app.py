@@ -1,15 +1,10 @@
 import streamlit as st
 import requests
 import time
-import toml
 import json
-
-
 
 # ✅ Load API base from Streamlit secret
 API_BASE = st.secrets["api"]["base_url"]
-
-
 
 st.set_page_config(page_title="OWASP Quiz Generator", layout="centered")
 st.title("☁️ OWASP Quiz Generator")
@@ -86,6 +81,8 @@ if "session_id" in st.session_state:
         with st.form("answer_form"):
             for i, q in enumerate(quiz_result["questions"], 1):
                 st.markdown(f"**Q{i}. {q['question']}**")
+                if "code" in q and q["code"].strip():
+                    st.code(q["code"], language="javascript")
                 selected = st.radio(f"Your Answer (Q{i})", q["options"], key=f"q{i}")
                 user_answers[q["question"]] = selected
             answer_submitted = st.form_submit_button("Check My Answers")
@@ -97,6 +94,8 @@ if "session_id" in st.session_state:
                 user_ans = user_answers[q["question"]]
                 correct_ans = q["answer"]
                 st.markdown(f"**Q{i}: {q['question']}**")
+                if "code" in q and q["code"].strip():
+                    st.code(q["code"], language="javascript")
                 st.markdown(f"- Your answer: {user_ans}")
                 st.markdown(f"- Correct answer: {correct_ans}")
                 if user_ans == correct_ans:
